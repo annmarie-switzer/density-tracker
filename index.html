@@ -50,17 +50,17 @@
   }
   .screen.active{display:flex; flex-direction:column;}
 
-  /* Run screen gets its own layout: fixed header/footer, scrollable middle */
-  #screen-run.active{
+  /* Block screen: fixed header/footer feel, scrollable middle, Save always visible */
+  #screen-block.active{
     display:flex; flex-direction:column;
     padding-bottom: 0;
     overflow:hidden;
   }
-  #run-scroll{
+  #block-scroll{
     flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
     padding: 18px 18px 10px;
   }
-  #run-finish-wrap{
+  #block-save-wrap{
     flex-shrink:0;
     padding: 12px 18px calc(14px + env(safe-area-inset-bottom));
     background: var(--ink);
@@ -70,7 +70,7 @@
   /* Header */
   .topbar{
     display:flex; align-items:baseline; justify-content:space-between;
-    margin-bottom: 22px;
+    margin-bottom: 18px;
   }
   .brand{
     font-family: Georgia, "Times New Roman", serif;
@@ -82,52 +82,122 @@
     font-size: 11px; letter-spacing: 2.5px; color:var(--cream-dim);
     text-transform:uppercase; margin-top:2px;
   }
-  .icon-btn{
-    width:38px; height:38px; border-radius:50%;
-    background:var(--panel); border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center;
-    color:var(--cream-dim); font-size:18px;
+  .back-btn{
+    background:none; border:none; color:var(--cream-dim); font-size:15px;
+    display:flex; align-items:center; gap:4px; padding:6px 0;
   }
 
-  /* Day cards */
-  .day-card{
+  /* Week banner */
+  .week-banner{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--panel); border:1px solid var(--line); border-radius:16px;
+    padding:14px 16px; margin-bottom:18px;
+  }
+  .week-info .week-num{ font-size:20px; font-weight:700; color:var(--cream); }
+  .week-info .week-target{ font-size:12px; color:var(--cream-dim); margin-top:2px; }
+  .week-advance-btn{
+    background:var(--copper); color:var(--ink-2); border:none; border-radius:11px;
+    padding:11px 14px; font-size:13px; font-weight:700; white-space:nowrap;
+  }
+  .week-advance-btn:active{ background:var(--copper-bright); }
+
+  /* Day grouping */
+  .day-group{ margin-bottom: 22px; }
+  .day-group-label{
+    font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--brass);
+    margin: 0 2px 8px;
+  }
+
+  /* Block row (tappable, lives on Home) */
+  .block-row{
     background:var(--panel);
     border:1px solid var(--line);
-    border-radius:18px;
-    padding:18px 18px 16px;
-    margin-bottom:14px;
-    position:relative;
-    overflow:hidden;
+    border-radius:16px;
+    padding:14px 16px;
+    margin-bottom:10px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    position:relative; overflow:hidden;
   }
-  .day-card::before{
+  .block-row::before{
     content:"";
     position:absolute; left:0; top:0; bottom:0; width:4px;
     background:var(--copper);
   }
-  .day-label{
-    font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--copper-bright); margin-bottom:4px;
-  }
-  .day-title{
-    font-size:19px; font-weight:600; color:var(--cream); margin-bottom:10px;
-  }
-  .block-chip-row{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-  .block-chip{
-    font-size:12px; padding:5px 10px; border-radius:20px;
-    background:var(--panel-2); color:var(--cream-dim); border:1px solid var(--line);
-  }
-  .day-cta{
-    display:flex; align-items:center; justify-content:center; gap:8px;
-    background:var(--copper); color:var(--ink-2);
-    border:none; border-radius:12px; padding:13px;
-    font-size:15px; font-weight:600; width:100%;
-  }
-  .day-cta:active{ background:var(--copper-bright); }
+  .block-row:active{ background:var(--panel-2); }
+  .block-row-main{ flex:1; min-width:0; }
+  .block-row-name{ font-size:16px; font-weight:600; color:var(--cream); margin-bottom:3px; }
+  .block-row-meta{ font-size:12.5px; color:var(--cream-dim); }
+  .block-row-right{ display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+  .block-row-rounds{ font-size:22px; font-weight:800; color:var(--cream); font-variant-numeric: tabular-nums; }
+  .block-row-rounds .unit{ font-size:11px; font-weight:500; color:var(--cream-dim); margin-left:2px; }
+  .chevron{ color:var(--cream-dim); font-size:18px; }
 
-  /* Section heading */
-  .section-head{
-    font-size:11px; letter-spacing:2px; text-transform:uppercase; color:var(--cream-dim);
-    margin: 18px 0 10px 2px;
+  .indicator{
+    font-size:10.5px; font-weight:700; letter-spacing:0.5px; padding:3px 8px; border-radius:20px;
   }
+  .indicator.up{ background:rgba(212,162,76,0.18); color:var(--amber); }
+  .indicator.hold{ background:rgba(126,148,104,0.18); color:var(--green); }
+  .indicator.new{ background:var(--panel-2); color:var(--cream-dim); }
+
+  .empty-state{
+    text-align:center; color:var(--cream-dim); font-size:14px; margin-top:60px; line-height:1.6;
+  }
+  .empty-state .big-emoji{ font-size:40px; display:block; margin-bottom:14px; }
+
+  /* Block detail screen */
+  .block-header{ text-align:center; margin-bottom: 18px; }
+  .block-header-name{ font-size:21px; font-weight:600; color:var(--cream); }
+  .block-header-day{ font-size:12px; color:var(--cream-dim); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px;}
+
+  .last-time-banner{
+    display:flex; align-items:center; gap:10px;
+    background:var(--panel); border:1px solid var(--line);
+    border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:13.5px; color:var(--cream-dim);
+  }
+  .last-time-banner.up{ border-color:rgba(212,162,76,0.4); background:rgba(212,162,76,0.08); color:var(--amber); }
+  .last-time-banner.hold{ border-color:rgba(126,148,104,0.4); background:rgba(126,148,104,0.08); color:var(--green); }
+
+  .exercise-list{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:6px 16px; margin-bottom:20px; }
+  .exercise-row{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:13px 0; border-bottom:1px solid var(--line);
+  }
+  .exercise-row:last-child{ border-bottom:none; }
+  .ex-name{ font-size:15px; color:var(--cream); }
+  .ex-meta{ font-size:13px; color:var(--cream-dim); }
+  .ex-weight-edit{
+    width:58px; text-align:center; background:var(--panel-2); color:var(--cream);
+    border:1px solid var(--line); border-radius:8px; padding:7px 2px; font-size:15px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .round-counter-wrap{
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    margin: 6px 0 10px;
+  }
+  .round-big{
+    font-size:88px; font-weight:800; color:var(--copper-bright); line-height:1; font-variant-numeric: tabular-nums;
+  }
+  .round-target-label{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--cream-dim); text-align:center; }
+  .round-btn-row{ display:flex; gap:14px; align-items:center; }
+  .round-btn{
+    width:84px; height:84px; border-radius:50%;
+    background:var(--copper); color:var(--ink-2);
+    font-size:32px; font-weight:700; border:none;
+    box-shadow: var(--shadow);
+  }
+  .round-btn:active{ transform:scale(0.95); background:var(--copper-bright); }
+  .round-minus{
+    width:48px; height:48px; border-radius:50%;
+    background:var(--panel); color:var(--cream-dim); border:1px solid var(--line);
+    font-size:20px;
+  }
+
+  .save-btn{
+    width:100%; padding:16px; border-radius:14px; border:none;
+    background:var(--green); color:var(--ink-2); font-size:16px; font-weight:700;
+  }
+  .save-btn:active{ filter:brightness(1.1); }
 
   /* Bottom nav */
   .navbar{
@@ -143,83 +213,7 @@
   .nav-btn .navicon{ font-size:19px; line-height:1; }
   .nav-btn.active{ color:var(--copper-bright); }
 
-  /* Block run screen */
-  .run-header{
-    text-align:center; margin-bottom: 6px;
-  }
-  .run-block-name{ font-size:20px; font-weight:600; color:var(--cream); }
-  .run-day-name{ font-size:12px; color:var(--cream-dim); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px;}
-
-  .timer-wrap{
-    display:flex; flex-direction:column; align-items:center;
-    margin: 22px 0 18px;
-  }
-  .timer-ring{
-    width:230px; height:230px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    position:relative;
-  }
-  .timer-ring svg{ position:absolute; inset:0; transform:rotate(-90deg); }
-  .timer-time{
-    font-size:52px; font-weight:700; color:var(--cream); font-variant-numeric: tabular-nums;
-    letter-spacing:1px;
-  }
-  .timer-state{
-    font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--cream-dim); margin-top:4px;
-  }
-
-  .timer-controls{ display:flex; gap:10px; justify-content:center; margin-bottom:22px; }
-  .ctrl-btn{
-    flex:1; max-width:140px;
-    padding:13px; border-radius:12px; border:1px solid var(--line);
-    background:var(--panel); color:var(--cream); font-size:14px; font-weight:600;
-  }
-  .ctrl-btn.primary{ background:var(--copper); color:var(--ink-2); border:none; }
-  .ctrl-btn:active{ filter:brightness(1.15); }
-
-  .exercise-list{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:6px 16px; margin-bottom:18px; }
-  .exercise-row{
-    display:flex; justify-content:space-between; align-items:center;
-    padding:12px 0; border-bottom:1px solid var(--line);
-  }
-  .exercise-row:last-child{ border-bottom:none; }
-  .ex-name{ font-size:15px; color:var(--cream); }
-  .ex-meta{ font-size:13px; color:var(--cream-dim); }
-  .ex-weight-edit{
-    width:54px; text-align:center; background:var(--panel-2); color:var(--cream);
-    border:1px solid var(--line); border-radius:8px; padding:6px 2px; font-size:14px;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .round-counter-wrap{
-    display:flex; flex-direction:column; align-items:center; gap:14px;
-    margin: 6px 0 18px;
-  }
-  .round-big{
-    font-size:84px; font-weight:800; color:var(--copper-bright); line-height:1; font-variant-numeric: tabular-nums;
-  }
-  .round-label{ font-size:12px; letter-spacing:2px; text-transform:uppercase; color:var(--cream-dim); }
-  .round-btn-row{ display:flex; gap:14px; align-items:center; }
-  .round-btn{
-    width:78px; height:78px; border-radius:50%;
-    background:var(--copper); color:var(--ink-2);
-    font-size:30px; font-weight:700; border:none;
-    box-shadow: var(--shadow);
-  }
-  .round-btn:active{ transform:scale(0.95); background:var(--copper-bright); }
-  .round-minus{
-    width:46px; height:46px; border-radius:50%;
-    background:var(--panel); color:var(--cream-dim); border:1px solid var(--line);
-    font-size:20px;
-  }
-
-  .finish-btn{
-    width:100%; padding:16px; border-radius:14px; border:none;
-    background:var(--green); color:var(--ink-2); font-size:16px; font-weight:700;
-  }
-  .finish-btn:active{ filter:brightness(1.1); }
-
-  /* History */
+  /* History (kept, simplified) */
   .hist-block-card{
     background:var(--panel); border:1px solid var(--line); border-radius:16px;
     padding:16px; margin-bottom:12px;
@@ -239,50 +233,13 @@
   }
   .pill.up{ background:rgba(212,162,76,0.18); color:var(--amber); }
   .pill.hold{ background:rgba(126,148,104,0.18); color:var(--green); }
-  .empty-state{
-    text-align:center; color:var(--cream-dim); font-size:14px; margin-top:60px; line-height:1.6;
-  }
-  .empty-state .big-emoji{ font-size:40px; display:block; margin-bottom:14px; }
-
-  /* Suggestion banner */
-  .suggest-banner{
-    display:flex; align-items:center; gap:10px;
-    background:rgba(212,162,76,0.12); border:1px solid rgba(212,162,76,0.35);
-    border-radius:12px; padding:10px 14px; margin-bottom:14px; font-size:13px; color:var(--amber);
-  }
-
-  /* Editor screen */
-  .field-label{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--cream-dim); margin: 16px 0 6px; }
-  .text-input{
-    width:100%; background:var(--panel); border:1px solid var(--line); border-radius:10px;
-    padding:12px 14px; color:var(--cream); font-size:15px;
-  }
-  .ex-edit-row{ display:flex; gap:8px; margin-bottom:8px; align-items:center; }
-  .ex-edit-row input{ flex:1; }
-  .small-btn{
-    padding:8px 12px; border-radius:9px; background:var(--panel-2); border:1px solid var(--line);
-    color:var(--cream-dim); font-size:13px;
-  }
-  .danger-btn{ color:var(--red); }
-  .add-block-btn{
-    width:100%; padding:13px; border-radius:12px; border:1.5px dashed var(--line);
-    background:transparent; color:var(--cream-dim); font-size:14px; margin-top:6px;
-  }
-  .save-btn{
-    width:100%; padding:15px; border-radius:13px; background:var(--copper); color:var(--ink-2);
-    border:none; font-size:15px; font-weight:700; margin-top:22px;
-  }
-  .editor-block{
-    background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px; margin-bottom:12px;
-  }
-  .editor-block-head{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
-  .editor-block-head input{ font-size:15px; font-weight:600; background:transparent; border:none; color:var(--cream); padding:0; }
 
   .toast{
     position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
     background:var(--panel-2); border:1px solid var(--line); color:var(--cream);
     padding:10px 18px; border-radius:30px; font-size:13px; box-shadow:var(--shadow);
     opacity:0; transition:opacity 0.25s; pointer-events:none; z-index:50;
+    max-width: 85vw; text-align:center;
   }
   .toast.show{ opacity:1; }
 
@@ -296,52 +253,44 @@
   <div class="screen active" id="screen-home">
     <div class="topbar">
       <div class="brand">Density<span class="sub">Rep Block Tracker</span></div>
-      <button class="icon-btn" onclick="goTo('settings')">⚙︎</button>
     </div>
+
+    <div class="week-banner">
+      <div class="week-info">
+        <div class="week-num" id="week-num-display">Week 1</div>
+        <div class="week-target" id="week-target-display">Target: 9 rounds</div>
+      </div>
+      <button class="week-advance-btn" onclick="advanceWeek()" id="week-advance-btn">Complete Week →</button>
+    </div>
+
     <div id="home-content"></div>
   </div>
 
-  <!-- RUN -->
-  <div class="screen" id="screen-run">
-    <div id="run-scroll">
-      <div class="run-header">
-        <div class="run-block-name" id="run-block-name">Block</div>
-        <div class="run-day-name" id="run-day-name">Day</div>
+  <!-- BLOCK DETAIL -->
+  <div class="screen" id="screen-block">
+    <div id="block-scroll">
+      <button class="back-btn" onclick="goTo('home')">‹ Today</button>
+      <div class="block-header">
+        <div class="block-header-name" id="block-header-name">Block</div>
+        <div class="block-header-day" id="block-header-day">Day</div>
       </div>
 
-      <div class="exercise-list" id="run-exercise-list"></div>
+      <div id="block-last-time-banner"></div>
 
-      <div class="timer-wrap">
-        <div class="timer-ring">
-          <svg viewBox="0 0 230 230" width="230" height="230">
-            <circle cx="115" cy="115" r="104" fill="none" stroke="#3A352A" stroke-width="10"/>
-            <circle id="timer-arc" cx="115" cy="115" r="104" fill="none" stroke="#C97B4A" stroke-width="10"
-              stroke-linecap="round" stroke-dasharray="653.45" stroke-dashoffset="0"/>
-          </svg>
-          <div>
-            <div class="timer-time" id="timer-display">10:00</div>
-            <div class="timer-state" id="timer-state">Ready</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="timer-controls">
-        <button class="ctrl-btn primary" id="timer-toggle" onclick="toggleTimer()">Start</button>
-        <button class="ctrl-btn" onclick="resetTimer()">Reset</button>
-      </div>
+      <div class="exercise-list" id="block-exercise-list"></div>
 
       <div class="round-counter-wrap">
         <div class="round-big" id="round-count">0</div>
-        <div class="round-label">Full Rounds Completed</div>
+        <div class="round-target-label" id="round-target-label">FULL ROUNDS &middot; TARGET 9</div>
         <div class="round-btn-row">
           <button class="round-minus" onclick="adjustRound(-1)">–</button>
           <button class="round-btn" onclick="adjustRound(1)">+1</button>
-          <div style="width:46px;"></div>
+          <div style="width:48px;"></div>
         </div>
       </div>
     </div>
-    <div id="run-finish-wrap">
-      <button class="finish-btn" onclick="finishSession()">Finish &amp; Save</button>
+    <div id="block-save-wrap">
+      <button class="save-btn" onclick="saveBlockSession()">Save</button>
     </div>
   </div>
 
@@ -353,23 +302,12 @@
     <div id="history-content"></div>
   </div>
 
-  <!-- SETTINGS / EDITOR -->
-  <div class="screen" id="screen-settings">
-    <div class="topbar">
-      <div class="brand">Program<span class="sub">Edit Days &amp; Blocks</span></div>
-    </div>
-    <div id="settings-content"></div>
-  </div>
-
   <div class="navbar">
     <button class="nav-btn active" id="nav-home" onclick="goTo('home')">
       <span class="navicon">⌂</span>Today
     </button>
     <button class="nav-btn" id="nav-history" onclick="goTo('history')">
       <span class="navicon">▤</span>History
-    </button>
-    <button class="nav-btn" id="nav-settings" onclick="goTo('settings')">
-      <span class="navicon">✎</span>Program
     </button>
   </div>
 </div>
@@ -378,11 +316,15 @@
 
 <script>
 /* ---------------- Data Model & Persistence ---------------- */
-const STORAGE_KEY = 'density_program_v1';
-const SESSIONS_KEY = 'density_sessions_v1';
-const BLOCK_SECONDS = 600; // 10 minutes
+const STORAGE_KEY = 'density_program_v2';
+const SESSIONS_KEY = 'density_sessions_v2';
+const STATE_KEY = 'density_state_v2';
+const OLD_PROGRAM_KEY = 'density_program_v1';
+const OLD_SESSIONS_KEY = 'density_sessions_v1';
 
-const defaultProgram = {
+// Fixed program structure (not user-editable — this is Andy Speer's actual program).
+// Only `weight` per exercise is mutable by the user during use.
+const program = {
   days: [
     {
       id: 'day1', name: 'Day 1',
@@ -424,15 +366,20 @@ const defaultProgram = {
   ]
 };
 
-function loadProgram(){
+// Week -> round target. Week 4 = max effort, no fixed target (null).
+const WEEK_TARGETS = { 1: 9, 2: 8, 3: 7, 4: null };
+const MAX_WEEK = 4;
+
+function loadWeights(){
+  // Load just the weight overrides (exercise name -> weight) keyed by blockId, persisted separately
+  // from the fixed program structure, so the program shape itself can never drift from the real plan.
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) return JSON.parse(raw);
   } catch(e){}
-  saveProgram(defaultProgram);
-  return JSON.parse(JSON.stringify(defaultProgram));
+  return {};
 }
-function saveProgram(p){ localStorage.setItem(STORAGE_KEY, JSON.stringify(p)); }
+function saveWeights(w){ localStorage.setItem(STORAGE_KEY, JSON.stringify(w)); }
 
 function loadSessions(){
   try {
@@ -443,45 +390,73 @@ function loadSessions(){
 }
 function saveSessions(s){ localStorage.setItem(SESSIONS_KEY, JSON.stringify(s)); }
 
-let program = loadProgram();
+function loadState(){
+  try {
+    const raw = localStorage.getItem(STATE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  return { currentWeek: 1 };
+}
+function saveState(s){ localStorage.setItem(STATE_KEY, JSON.stringify(s)); }
+
+// One-time migration: if old v1 program data exists (from the previous version of this app)
+// and the new weight-override store doesn't exist yet, carry weights forward so nothing is lost.
+function migrateFromV1IfNeeded(){
+  const alreadyMigrated = localStorage.getItem(STORAGE_KEY);
+  if (alreadyMigrated) return;
+  try {
+    const oldRaw = localStorage.getItem(OLD_PROGRAM_KEY);
+    if (!oldRaw) return;
+    const oldProgram = JSON.parse(oldRaw);
+    const weights = {};
+    (oldProgram.days || []).forEach(day=>{
+      (day.blocks || []).forEach(block=>{
+        weights[block.id] = {};
+        (block.exercises || []).forEach(ex=>{
+          weights[block.id][ex.name] = ex.weight;
+        });
+      });
+    });
+    saveWeights(weights);
+  } catch(e){}
+}
+
+function migrateSessionsFromV1IfNeeded(){
+  const alreadyMigrated = localStorage.getItem(SESSIONS_KEY);
+  if (alreadyMigrated) return;
+  try {
+    const oldRaw = localStorage.getItem(OLD_SESSIONS_KEY);
+    if (!oldRaw) return;
+    const oldSessions = JSON.parse(oldRaw);
+    saveSessions(oldSessions);
+  } catch(e){}
+}
+
+migrateFromV1IfNeeded();
+migrateSessionsFromV1IfNeeded();
+
+let weightOverrides = loadWeights(); // { blockId: { exerciseName: weight } }
 let sessions = loadSessions();
+let state = loadState();
 
-/* ---------------- Navigation ---------------- */
-function goTo(screen){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('screen-'+screen).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const navMap = {home:'nav-home', history:'nav-history', settings:'nav-settings'};
-  if (navMap[screen]) document.getElementById(navMap[screen]).classList.add('active');
-  if (screen==='home') renderHome();
-  if (screen==='history') renderHistory();
-  if (screen==='settings') renderSettings();
+// Apply weight overrides onto the fixed program in memory
+function applyWeightOverrides(){
+  program.days.forEach(day=>{
+    day.blocks.forEach(block=>{
+      const ov = weightOverrides[block.id];
+      if (!ov) return;
+      block.exercises.forEach(ex=>{
+        if (ov[ex.name] !== undefined) ex.weight = ov[ex.name];
+      });
+    });
+  });
 }
+applyWeightOverrides();
 
-function showToast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), 1800);
-}
-
-/* ---------------- Suggestion logic ---------------- */
-// 9+ rounds -> go up. 8 rounds -> go up. 7 rounds -> hold (target).
-// <7 -> hold / consider lowering (we just say hold, don't push them down automatically)
-function getSuggestion(blockId){
-  const past = sessions.filter(s=>s.blockId===blockId).sort((a,b)=> new Date(b.dateISO) - new Date(a.dateISO));
-  if (past.length===0) return null;
-  const last = past[0];
-  let action = 'hold';
-  if (last.rounds >= 8) action = 'up';
-  else if (last.rounds <= 6) action = 'down_consider';
-  return { last, action };
-}
-
-function suggestedWeight(currentWeight, action){
-  if (currentWeight === 0) return 0;
-  if (action === 'up') return currentWeight + 5;
-  return currentWeight;
+function persistWeightsForBlock(block){
+  weightOverrides[block.id] = {};
+  block.exercises.forEach(ex=>{ weightOverrides[block.id][ex.name] = ex.weight; });
+  saveWeights(weightOverrides);
 }
 
 function findBlockAndDay(blockId){
@@ -492,88 +467,144 @@ function findBlockAndDay(blockId){
   return null;
 }
 
+/* ---------------- Week / threshold logic ---------------- */
+function getTargetForWeek(week){
+  return WEEK_TARGETS[week] !== undefined ? WEEK_TARGETS[week] : 7; // fallback safety
+}
+
+function getLastSession(blockId){
+  const past = sessions.filter(s=>s.blockId===blockId).sort((a,b)=> new Date(b.dateISO) - new Date(a.dateISO));
+  return past.length ? past[0] : null;
+}
+
+// Indicator is based on the CURRENT week's target compared against the last logged round count.
+function getIndicator(blockId){
+  const last = getLastSession(blockId);
+  if (!last) return { type:'new', label:'NOT STARTED' };
+  const target = getTargetForWeek(state.currentWeek);
+  if (target === null){
+    return { type:'new', label:'MAX EFFORT WEEK' };
+  }
+  if (last.rounds >= target){
+    return { type:'up', label:'↑ GO UP IN WEIGHT' };
+  }
+  return { type:'hold', label:'HOLD WEIGHT' };
+}
+
+function advanceWeek(){
+  state.currentWeek = state.currentWeek >= MAX_WEEK ? 1 : state.currentWeek + 1;
+  saveState(state);
+  showToast(state.currentWeek === 1 ? 'New cycle — back to Week 1' : `Moved to Week ${state.currentWeek}`);
+  renderHome();
+}
+
+/* ---------------- Navigation ---------------- */
+function goTo(screen){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+screen).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const navMap = {home:'nav-home', history:'nav-history'};
+  if (navMap[screen]) document.getElementById(navMap[screen]).classList.add('active');
+  if (screen==='home') renderHome();
+  if (screen==='history') renderHistory();
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1800);
+}
+
 /* ---------------- HOME ---------------- */
 function renderHome(){
+  const target = getTargetForWeek(state.currentWeek);
+  document.getElementById('week-num-display').textContent = 'Week ' + state.currentWeek;
+  document.getElementById('week-target-display').textContent = target === null ? 'Max effort — no fixed target' : `Target: ${target} rounds`;
+  document.getElementById('week-advance-btn').textContent = state.currentWeek >= MAX_WEEK ? 'Restart Cycle →' : 'Complete Week →';
+
   const el = document.getElementById('home-content');
   el.innerHTML = '';
+
   program.days.forEach(day=>{
-    const card = document.createElement('div');
-    card.className = 'day-card';
-    const chipRow = day.blocks.map(b=>`<span class="block-chip">${escapeHtml(b.name)}</span>`).join('');
+    const group = document.createElement('div');
+    group.className = 'day-group';
 
-    // last session across any block in this day
-    let lastDateStr = 'Not started yet';
-    const dayBlockIds = day.blocks.map(b=>b.id);
-    const daySessions = sessions.filter(s=>dayBlockIds.includes(s.blockId));
-    if (daySessions.length){
-      daySessions.sort((a,b)=> new Date(b.dateISO) - new Date(a.dateISO));
-      lastDateStr = 'Last done ' + formatDate(daySessions[0].dateISO);
-    }
+    const label = document.createElement('div');
+    label.className = 'day-group-label';
+    label.textContent = day.name;
+    group.appendChild(label);
 
-    card.innerHTML = `
-      <div class="day-label">${lastDateStr}</div>
-      <div class="day-title">${escapeHtml(day.name)}</div>
-      <div class="block-chip-row">${chipRow}</div>
-      <button class="day-cta" onclick="startDay('${day.id}')">Start ${escapeHtml(day.name)}</button>
-    `;
-    el.appendChild(card);
+    day.blocks.forEach(block=>{
+      const last = getLastSession(block.id);
+      const ind = getIndicator(block.id);
+      const row = document.createElement('button');
+      row.className = 'block-row';
+      row.onclick = ()=> openBlock(block.id);
+
+      const roundsHtml = last
+        ? `<div class="block-row-rounds">${last.rounds}<span class="unit"> rds</span></div>`
+        : `<div class="block-row-rounds" style="color:var(--cream-dim); font-size:15px;">—</div>`;
+
+      row.innerHTML = `
+        <div class="block-row-main">
+          <div class="block-row-name">${escapeHtml(block.name)}</div>
+          <div class="block-row-meta">${last ? formatDate(last.dateISO) : 'Not started yet'}</div>
+        </div>
+        <div class="block-row-right">
+          ${roundsHtml}
+          <span class="indicator ${ind.type}">${ind.label}</span>
+        </div>
+      `;
+      group.appendChild(row);
+    });
+
+    el.appendChild(group);
   });
 }
 
-// When starting a day with multiple blocks, just queue them — for simplicity we let user pick which block to run now
-function startDay(dayId){
-  const day = program.days.find(d=>d.id===dayId);
-  if (!day) return;
-  if (day.blocks.length === 1){
-    startBlock(day.blocks[0].id);
-    return;
-  }
-  // show quick picker via settings-style inline — simplest: prompt list in home content
-  const el = document.getElementById('home-content');
-  const picker = document.createElement('div');
-  picker.className = 'day-card';
-  picker.innerHTML = `<div class="day-title">Which block?</div>` +
-    day.blocks.map(b=>`<button class="day-cta" style="margin-bottom:8px;" onclick="startBlock('${b.id}')">${escapeHtml(b.name)}</button>`).join('') +
-    `<button class="ctrl-btn" style="width:100%;" onclick="renderHome()">Cancel</button>`;
-  el.prepend(picker);
-  picker.scrollIntoView({behavior:'smooth'});
-}
-
-/* ---------------- RUN SCREEN ---------------- */
+/* ---------------- BLOCK DETAIL SCREEN ---------------- */
 let activeBlockId = null;
-let activeDayName = '';
-let timerInterval = null;
-let secondsLeft = BLOCK_SECONDS;
-let timerRunning = false;
 let roundCount = 0;
 let currentExerciseWeights = {};
 
-const CIRC = 2 * Math.PI * 104; // ~653.45
-
-function startBlock(blockId){
+function openBlock(blockId){
   const found = findBlockAndDay(blockId);
   if (!found) return;
   activeBlockId = blockId;
-  activeDayName = found.day.name;
-  secondsLeft = BLOCK_SECONDS;
-  timerRunning = false;
   roundCount = 0;
   currentExerciseWeights = {};
   found.block.exercises.forEach(ex=> currentExerciseWeights[ex.name] = ex.weight);
 
-  document.getElementById('run-block-name').textContent = found.block.name;
-  document.getElementById('run-day-name').textContent = found.day.name;
-  renderRunExerciseList(found.block);
-  updateTimerDisplay();
-  document.getElementById('round-count').textContent = '0';
-  document.getElementById('timer-toggle').textContent = 'Start';
-  document.getElementById('timer-state').textContent = 'Ready';
+  document.getElementById('block-header-name').textContent = found.block.name;
+  document.getElementById('block-header-day').textContent = found.day.name;
+  renderBlockExerciseList(found.block);
+  renderLastTimeBanner(blockId);
 
-  goTo('run');
+  const target = getTargetForWeek(state.currentWeek);
+  document.getElementById('round-target-label').textContent = target === null
+    ? 'FULL ROUNDS · MAX EFFORT'
+    : `FULL ROUNDS · TARGET ${target}`;
+
+  document.getElementById('round-count').textContent = '0';
+
+  goTo('block');
 }
 
-function renderRunExerciseList(block){
-  const el = document.getElementById('run-exercise-list');
+function renderLastTimeBanner(blockId){
+  const el = document.getElementById('block-last-time-banner');
+  const last = getLastSession(blockId);
+  if (!last){
+    el.innerHTML = `<div class="last-time-banner">First time logging this block — go get a baseline!</div>`;
+    return;
+  }
+  const ind = getIndicator(blockId);
+  const cls = ind.type === 'up' ? 'up' : (ind.type === 'hold' ? 'hold' : '');
+  el.innerHTML = `<div class="last-time-banner ${cls}">Last time (${formatDate(last.dateISO)}): <strong>${last.rounds} rounds</strong> — ${ind.label.toLowerCase()}</div>`;
+}
+
+function renderBlockExerciseList(block){
+  const el = document.getElementById('block-exercise-list');
   el.innerHTML = block.exercises.map(ex => `
     <div class="exercise-row">
       <div>
@@ -588,70 +619,25 @@ function renderRunExerciseList(block){
   `).join('');
 }
 
-function updateTimerDisplay(){
-  const m = Math.floor(secondsLeft/60);
-  const s = secondsLeft%60;
-  document.getElementById('timer-display').textContent = `${m}:${s.toString().padStart(2,'0')}`;
-  const fraction = secondsLeft / BLOCK_SECONDS;
-  const offset = CIRC * (1-fraction);
-  document.getElementById('timer-arc').setAttribute('stroke-dasharray', CIRC);
-  document.getElementById('timer-arc').setAttribute('stroke-dashoffset', offset);
-  const arcColor = secondsLeft <= 30 ? '#B5634A' : '#C97B4A';
-  document.getElementById('timer-arc').setAttribute('stroke', arcColor);
-}
-
-function toggleTimer(){
-  timerRunning = !timerRunning;
-  document.getElementById('timer-toggle').textContent = timerRunning ? 'Pause' : 'Resume';
-  document.getElementById('timer-state').textContent = timerRunning ? 'Working' : 'Paused';
-  if (timerRunning){
-    timerInterval = setInterval(()=>{
-      secondsLeft--;
-      if (secondsLeft <= 0){
-        secondsLeft = 0;
-        clearInterval(timerInterval);
-        timerRunning = false;
-        document.getElementById('timer-toggle').textContent = 'Start';
-        document.getElementById('timer-state').textContent = 'Time! Stop at last full round';
-        if (navigator.vibrate) navigator.vibrate([200,100,200]);
-      }
-      updateTimerDisplay();
-    }, 1000);
-  } else {
-    clearInterval(timerInterval);
-  }
-}
-
-function resetTimer(){
-  clearInterval(timerInterval);
-  timerRunning = false;
-  secondsLeft = BLOCK_SECONDS;
-  document.getElementById('timer-toggle').textContent = 'Start';
-  document.getElementById('timer-state').textContent = 'Ready';
-  updateTimerDisplay();
-}
-
 function adjustRound(delta){
   roundCount = Math.max(0, roundCount + delta);
   document.getElementById('round-count').textContent = roundCount;
   if (navigator.vibrate) navigator.vibrate(15);
 }
 
-function finishSession(){
+function saveBlockSession(){
   if (!activeBlockId) return;
-  clearInterval(timerInterval);
   const session = {
     id: 'sess_' + Date.now(),
     dateISO: new Date().toISOString(),
     blockId: activeBlockId,
+    week: state.currentWeek,
     weights: Object.assign({}, currentExerciseWeights),
-    rounds: roundCount,
-    durationSec: BLOCK_SECONDS - secondsLeft
+    rounds: roundCount
   };
   sessions.push(session);
   saveSessions(sessions);
 
-  // persist weight back into program as the "current" weight for next suggestion baseline
   const found = findBlockAndDay(activeBlockId);
   if (found){
     found.block.exercises.forEach(ex=>{
@@ -659,7 +645,7 @@ function finishSession(){
         ex.weight = currentExerciseWeights[ex.name];
       }
     });
-    saveProgram(program);
+    persistWeightsForBlock(found.block);
   }
 
   showToast(`Saved — ${roundCount} round${roundCount===1?'':'s'} logged`);
@@ -672,42 +658,33 @@ function renderHistory(){
   const el = document.getElementById('history-content');
   el.innerHTML = '';
 
-  // Build a flat list of blocks with their day name, in program order
   const allBlocks = [];
   program.days.forEach(day=> day.blocks.forEach(block=> allBlocks.push({day, block})));
 
   if (sessions.length === 0){
-    el.innerHTML = `<div class="empty-state"><span class="big-emoji">⏱</span>No sessions logged yet.<br>Finish a block to see it here.</div>`;
+    el.innerHTML = `<div class="empty-state"><span class="big-emoji">⏱</span>No sessions logged yet.<br>Save a block to see it here.</div>`;
     return;
   }
 
+  let any = false;
   allBlocks.forEach(({day, block})=>{
     const blockSessions = sessions.filter(s=>s.blockId===block.id).sort((a,b)=> new Date(b.dateISO)-new Date(a.dateISO));
     if (blockSessions.length === 0) return;
+    any = true;
 
     const card = document.createElement('div');
     card.className = 'hist-block-card';
-    const sugg = getSuggestion(block.id);
-    let suggHtml = '';
-    if (sugg){
-      if (sugg.action === 'up'){
-        suggHtml = `<div class="suggest-banner">↑ Last time you hit ${sugg.last.rounds} rounds — bump the weight next session.</div>`;
-      } else if (sugg.action === 'down_consider'){
-        suggHtml = `<div class="suggest-banner" style="color:var(--red); border-color:rgba(181,99,74,0.35); background:rgba(181,99,74,0.1);">Last time was ${sugg.last.rounds} rounds — at or below target, hold steady or ease up slightly.</div>`;
-      } else {
-        suggHtml = `<div class="suggest-banner" style="color:var(--green); border-color:rgba(126,148,104,0.35); background:rgba(126,148,104,0.1);">Right at 7 — that's the sweet spot. Hold this weight.</div>`;
-      }
-    }
 
-    const entries = blockSessions.map((s, idx)=>{
+    const entries = blockSessions.map(s=>{
       let pill = '';
-      if (s.rounds >= 8) pill = '<span class="pill up">↑ UP</span>';
-      else if (s.rounds === 7) pill = '<span class="pill hold">HOLD</span>';
+      const target = WEEK_TARGETS[s.week];
+      if (target !== null && target !== undefined && s.rounds >= target) pill = '<span class="pill up">↑ UP</span>';
+      else if (target !== null && target !== undefined && s.rounds === target) pill = '<span class="pill hold">HOLD</span>';
       const weightsStr = Object.entries(s.weights).map(([n,w])=>`${n} ${w}lb`).join(' · ');
       return `
         <div class="hist-entry">
           <div>
-            <div class="hist-date">${formatDate(s.dateISO)}</div>
+            <div class="hist-date">${formatDate(s.dateISO)} &middot; Wk ${s.week !== undefined ? s.week : '–'}</div>
             <div class="hist-weights">${escapeHtml(weightsStr)}</div>
           </div>
           <div class="hist-rounds">${s.rounds} rounds ${pill}</div>
@@ -718,114 +695,14 @@ function renderHistory(){
     card.innerHTML = `
       <div class="hist-block-title">${escapeHtml(block.name)}</div>
       <div class="hist-day-tag">${escapeHtml(day.name)}</div>
-      ${suggHtml}
       ${entries}
     `;
     el.appendChild(card);
   });
 
-  if (el.innerHTML === ''){
-    el.innerHTML = `<div class="empty-state"><span class="big-emoji">⏱</span>No sessions logged yet.<br>Finish a block to see it here.</div>`;
+  if (!any){
+    el.innerHTML = `<div class="empty-state"><span class="big-emoji">⏱</span>No sessions logged yet.<br>Save a block to see it here.</div>`;
   }
-}
-
-/* ---------------- SETTINGS / PROGRAM EDITOR ---------------- */
-function renderSettings(){
-  const el = document.getElementById('settings-content');
-  el.innerHTML = '';
-
-  program.days.forEach((day, dIdx)=>{
-    const dayWrap = document.createElement('div');
-    dayWrap.style.marginBottom = '22px';
-
-    const dayHeadRow = document.createElement('div');
-    dayHeadRow.style.display='flex';
-    dayHeadRow.style.alignItems='center';
-    dayHeadRow.style.gap='8px';
-    dayHeadRow.style.marginBottom='10px';
-    dayHeadRow.innerHTML = `
-      <input class="text-input" style="font-weight:700; font-size:16px;" value="${escapeHtml(day.name)}"
-        onchange="renameDay(${dIdx}, this.value)" />
-    `;
-    dayWrap.appendChild(dayHeadRow);
-
-    day.blocks.forEach((block, bIdx)=>{
-      const blockEl = document.createElement('div');
-      blockEl.className = 'editor-block';
-      let exRows = block.exercises.map((ex, eIdx)=>`
-        <div class="ex-edit-row">
-          <input class="text-input" value="${escapeHtml(ex.name)}" placeholder="Exercise"
-            onchange="updateExercise(${dIdx},${bIdx},${eIdx},'name',this.value)" />
-          <input class="text-input" style="max-width:64px;" type="number" value="${ex.reps}" placeholder="reps"
-            onchange="updateExercise(${dIdx},${bIdx},${eIdx},'reps',this.value)" />
-          <input class="text-input" style="max-width:64px;" type="number" value="${ex.weight}" placeholder="lb"
-            onchange="updateExercise(${dIdx},${bIdx},${eIdx},'weight',this.value)" />
-          <button class="small-btn danger-btn" onclick="removeExercise(${dIdx},${bIdx},${eIdx})">✕</button>
-        </div>
-      `).join('');
-
-      blockEl.innerHTML = `
-        <div class="editor-block-head">
-          <input value="${escapeHtml(block.name)}" placeholder="Block name" onchange="renameBlock(${dIdx},${bIdx},this.value)" />
-          <button class="small-btn danger-btn" onclick="removeBlock(${dIdx},${bIdx})">Delete</button>
-        </div>
-        ${exRows}
-        <button class="small-btn" onclick="addExercise(${dIdx},${bIdx})" style="margin-top:4px;">+ Add exercise</button>
-      `;
-      dayWrap.appendChild(blockEl);
-    });
-
-    const addBlockBtn = document.createElement('button');
-    addBlockBtn.className = 'add-block-btn';
-    addBlockBtn.textContent = '+ Add rep block to ' + day.name;
-    addBlockBtn.onclick = ()=> addBlock(dIdx);
-    dayWrap.appendChild(addBlockBtn);
-
-    el.appendChild(dayWrap);
-  });
-
-  const addDayBtn = document.createElement('button');
-  addDayBtn.className = 'add-block-btn';
-  addDayBtn.textContent = '+ Add a new day';
-  addDayBtn.onclick = addDay;
-  el.appendChild(addDayBtn);
-
-  const saveBtn = document.createElement('button');
-  saveBtn.className = 'save-btn';
-  saveBtn.textContent = 'Save Program';
-  saveBtn.onclick = ()=>{ saveProgram(program); showToast('Program saved'); renderHome(); };
-  el.appendChild(saveBtn);
-}
-
-function renameDay(dIdx, val){ program.days[dIdx].name = val; }
-function renameBlock(dIdx,bIdx,val){ program.days[dIdx].blocks[bIdx].name = val; }
-function updateExercise(dIdx,bIdx,eIdx,field,val){
-  const ex = program.days[dIdx].blocks[bIdx].exercises[eIdx];
-  if (field==='reps' || field==='weight') ex[field] = parseFloat(val)||0;
-  else ex[field] = val;
-}
-function removeExercise(dIdx,bIdx,eIdx){
-  program.days[dIdx].blocks[bIdx].exercises.splice(eIdx,1);
-  renderSettings();
-}
-function addExercise(dIdx,bIdx){
-  program.days[dIdx].blocks[bIdx].exercises.push({name:'New Exercise', reps:6, weight:10});
-  renderSettings();
-}
-function removeBlock(dIdx,bIdx){
-  if (!confirm('Delete this rep block? Its past history will remain in History but it will no longer appear on Today.')) return;
-  program.days[dIdx].blocks.splice(bIdx,1);
-  renderSettings();
-}
-function addBlock(dIdx){
-  const newId = 'block_' + Date.now();
-  program.days[dIdx].blocks.push({id:newId, name:'New Block', exercises:[{name:'Exercise 1', reps:6, weight:10}]});
-  renderSettings();
-}
-function addDay(){
-  const newId = 'day_' + Date.now();
-  program.days.push({id:newId, name:'Day ' + (program.days.length+1), blocks:[]});
-  renderSettings();
 }
 
 /* ---------------- Helpers ---------------- */

@@ -67,8 +67,12 @@
   }
   .back-btn{
     background:none; border:none; color:var(--cream-dim); font-size:15px;
-    display:flex; align-items:center; gap:4px; padding:6px 0;
+    display:flex; align-items:center; gap:4px;
+    padding:10px 14px 10px 4px;
+    margin: -10px 0 4px -4px;
+    min-height:44px;
   }
+  .back-btn:active{ color:var(--cream); }
 
   /* Week banner */
   .week-banner{
@@ -172,7 +176,7 @@
     font-size:88px; font-weight:800; color:var(--copper-bright); line-height:1; font-variant-numeric: tabular-nums;
   }
   .round-target-label{ font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:var(--cream-dim); text-align:center; }
-  .round-btn-row{ display:flex; gap:14px; align-items:center; }
+  .round-btn-row{ display:flex; gap:22px; align-items:center; justify-content:center; }
   .round-btn{
     width:84px; height:84px; border-radius:50%;
     background:var(--copper); color:var(--ink-2);
@@ -181,10 +185,11 @@
   }
   .round-btn:active{ transform:scale(0.95); background:var(--copper-bright); }
   .round-minus{
-    width:48px; height:48px; border-radius:50%;
+    width:54px; height:54px; border-radius:50%;
     background:var(--panel); color:var(--cream-dim); border:1px solid var(--line);
-    font-size:20px;
+    font-size:22px;
   }
+  .round-minus:active{ background:var(--panel-2); color:var(--cream); }
 
   .save-btn{
     width:100%; padding:16px; border-radius:14px; border:none;
@@ -278,7 +283,6 @@
       <div class="round-btn-row">
         <button class="round-minus" onclick="adjustRound(-1)">–</button>
         <button class="round-btn" onclick="adjustRound(1)">+1</button>
-        <div style="width:48px;"></div>
       </div>
     </div>
 
@@ -425,6 +429,62 @@ function migrateSessionsFromV1IfNeeded(){
 
 migrateFromV1IfNeeded();
 migrateSessionsFromV1IfNeeded();
+
+// ---- One-time real-data seed (June 2026) ----
+// Annmarie had already started the program before this app existed, so this backfills
+// her actual current weights, week, and most recent session per block. Runs exactly once,
+// guarded by a flag, and will NOT overwrite anything if it has already run before.
+const SEED_FLAG_KEY = 'density_seed_v1_applied';
+function applyRealDataSeedIfNeeded(){
+  if (localStorage.getItem(SEED_FLAG_KEY)) return;
+
+  const seedWeights = {
+    d1b1: { RDL: 20, Press: 10 },
+    d1b2: { Lunge: 15, Row: 15 },
+    d2b1: { Curls: 5, Kickbacks: 5, Flys: 5 },
+    d3b1: { Squat: 10, 'Jump Squat': 0, 'Push Press': 10 },
+    d3b2: { 'Chest Press': 15, Row: 15 }
+  };
+
+  // Approximate dates: week 1 sessions dated a week before week 2 sessions, both before "now".
+  const now = new Date();
+  const week1Date = new Date(now); week1Date.setDate(now.getDate() - 7);
+  const week2Date = new Date(now); week2Date.setDate(now.getDate() - 1);
+
+  const seedSessions = [
+    // Week 1 (Day 2, Day 3) — not yet repeated in week 2
+    { id: 'seed_d2b1_w1', dateISO: week1Date.toISOString(), blockId: 'd2b1', week: 1,
+      weights: { Curls: 5, Kickbacks: 5, Flys: 5 }, rounds: 7 },
+    { id: 'seed_d3b1_w1', dateISO: week1Date.toISOString(), blockId: 'd3b1', week: 1,
+      weights: { Squat: 10, 'Jump Squat': 0, 'Push Press': 10 }, rounds: 9 },
+    { id: 'seed_d3b2_w1', dateISO: week1Date.toISOString(), blockId: 'd3b2', week: 1,
+      weights: { 'Chest Press': 15, Row: 15 }, rounds: 7 },
+    // Week 2 (Day 1 only — already completed)
+    { id: 'seed_d1b1_w2', dateISO: week2Date.toISOString(), blockId: 'd1b1', week: 2,
+      weights: { RDL: 20, Press: 10 }, rounds: 8 },
+    { id: 'seed_d1b2_w2', dateISO: week2Date.toISOString(), blockId: 'd1b2', week: 2,
+      weights: { Lunge: 15, Row: 15 }, rounds: 7 }
+  ];
+
+  // Merge seed weights into whatever overrides already exist (seed wins, since it reflects reality).
+  const existingWeights = loadWeights();
+  Object.keys(seedWeights).forEach(blockId=>{
+    existingWeights[blockId] = Object.assign({}, existingWeights[blockId] || {}, seedWeights[blockId]);
+  });
+  saveWeights(existingWeights);
+
+  // Merge seed sessions into existing sessions (avoid duplicate seed ids if this somehow runs twice).
+  const existingSessions = loadSessions();
+  const existingIds = new Set(existingSessions.map(s=>s.id));
+  seedSessions.forEach(s=>{ if (!existingIds.has(s.id)) existingSessions.push(s); });
+  saveSessions(existingSessions);
+
+  // Set current week to 2.
+  saveState({ currentWeek: 2 });
+
+  localStorage.setItem(SEED_FLAG_KEY, 'true');
+}
+applyRealDataSeedIfNeeded();
 
 let weightOverrides = loadWeights(); // { blockId: { exerciseName: weight } }
 let sessions = loadSessions();
@@ -680,8 +740,11 @@ function renderHistory(){
     const entries = blockSessions.map(s=>{
       let pill = '';
       const target = WEEK_TARGETS[s.week];
-      if (target !== null && target !== undefined && s.rounds >= target) pill = '<span class="pill up">↑ UP</span>';
-      else if (target !== null && target !== undefined && s.rounds === target) pill = '<span class="pill hold">HOLD</span>';
+      if (target !== null && target !== undefined){
+        pill = s.rounds >= target
+          ? '<span class="pill up">↑ UP</span>'
+          : '<span class="pill hold">HOLD</span>';
+      }
       const weightsStr = Object.entries(s.weights).map(([n,w])=>`${n} ${w}lb`).join(' · ');
       return `
         <div class="hist-entry">

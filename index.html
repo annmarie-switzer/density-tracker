@@ -50,23 +50,6 @@
   }
   .screen.active{display:flex; flex-direction:column;}
 
-  /* Block screen: fixed header/footer feel, scrollable middle, Save always visible */
-  #screen-block.active{
-    display:flex; flex-direction:column;
-    padding-bottom: 0;
-    overflow:hidden;
-  }
-  #block-scroll{
-    flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch;
-    padding: 18px 18px 10px;
-  }
-  #block-save-wrap{
-    flex-shrink:0;
-    padding: 12px 18px calc(14px + env(safe-area-inset-bottom));
-    background: var(--ink);
-    border-top: 1px solid var(--line);
-  }
-
   /* Header */
   .topbar{
     display:flex; align-items:baseline; justify-content:space-between;
@@ -117,6 +100,7 @@
     margin-bottom:10px;
     display:flex; align-items:center; justify-content:space-between; gap:10px;
     position:relative; overflow:hidden;
+    width:100%; text-align:left; font-family:inherit;
   }
   .block-row::before{
     content:"";
@@ -150,12 +134,21 @@
   .block-header-day{ font-size:12px; color:var(--cream-dim); letter-spacing:1.5px; text-transform:uppercase; margin-top:3px;}
 
   .last-time-banner{
-    display:flex; align-items:center; gap:10px;
     background:var(--panel); border:1px solid var(--line);
-    border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:13.5px; color:var(--cream-dim);
+    border-radius:12px; padding:13px 14px; margin-bottom:16px;
   }
-  .last-time-banner.up{ border-color:rgba(212,162,76,0.4); background:rgba(212,162,76,0.08); color:var(--amber); }
-  .last-time-banner.hold{ border-color:rgba(126,148,104,0.4); background:rgba(126,148,104,0.08); color:var(--green); }
+  .last-time-banner .lt-label{
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase; color:var(--cream-dim); margin-bottom:6px;
+  }
+  .last-time-banner .lt-row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+  }
+  .last-time-banner .lt-rounds{ font-size:20px; font-weight:700; color:var(--cream); }
+  .last-time-banner .lt-rounds .unit{ font-size:12px; font-weight:500; color:var(--cream-dim); margin-left:3px; }
+  .last-time-banner.up{ border-color:rgba(212,162,76,0.4); background:rgba(212,162,76,0.08); }
+  .last-time-banner.hold{ border-color:rgba(126,148,104,0.4); background:rgba(126,148,104,0.08); }
+  .last-time-banner.up .lt-rounds{ color:var(--amber); }
+  .last-time-banner.hold .lt-rounds{ color:var(--green); }
 
   .exercise-list{ background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:6px 16px; margin-bottom:20px; }
   .exercise-row{
@@ -196,6 +189,7 @@
   .save-btn{
     width:100%; padding:16px; border-radius:14px; border:none;
     background:var(--green); color:var(--ink-2); font-size:16px; font-weight:700;
+    margin-bottom: 20px;
   }
   .save-btn:active{ filter:brightness(1.1); }
 
@@ -268,30 +262,27 @@
 
   <!-- BLOCK DETAIL -->
   <div class="screen" id="screen-block">
-    <div id="block-scroll">
-      <button class="back-btn" onclick="goTo('home')">‹ Today</button>
-      <div class="block-header">
-        <div class="block-header-name" id="block-header-name">Block</div>
-        <div class="block-header-day" id="block-header-day">Day</div>
-      </div>
+    <button class="back-btn" onclick="goTo('home')">‹ Today</button>
+    <div class="block-header">
+      <div class="block-header-name" id="block-header-name">Block</div>
+      <div class="block-header-day" id="block-header-day">Day</div>
+    </div>
 
-      <div id="block-last-time-banner"></div>
+    <div id="block-last-time-banner"></div>
 
-      <div class="exercise-list" id="block-exercise-list"></div>
+    <div class="exercise-list" id="block-exercise-list"></div>
 
-      <div class="round-counter-wrap">
-        <div class="round-big" id="round-count">0</div>
-        <div class="round-target-label" id="round-target-label">FULL ROUNDS &middot; TARGET 9</div>
-        <div class="round-btn-row">
-          <button class="round-minus" onclick="adjustRound(-1)">–</button>
-          <button class="round-btn" onclick="adjustRound(1)">+1</button>
-          <div style="width:48px;"></div>
-        </div>
+    <div class="round-counter-wrap">
+      <div class="round-big" id="round-count">0</div>
+      <div class="round-target-label" id="round-target-label">FULL ROUNDS &middot; TARGET 9</div>
+      <div class="round-btn-row">
+        <button class="round-minus" onclick="adjustRound(-1)">–</button>
+        <button class="round-btn" onclick="adjustRound(1)">+1</button>
+        <div style="width:48px;"></div>
       </div>
     </div>
-    <div id="block-save-wrap">
-      <button class="save-btn" onclick="saveBlockSession()">Save</button>
-    </div>
+
+    <button class="save-btn" onclick="saveBlockSession()">Save</button>
   </div>
 
   <!-- HISTORY -->
@@ -478,9 +469,10 @@ function getLastSession(blockId){
 }
 
 // Indicator is based on the CURRENT week's target compared against the last logged round count.
+// Returns null when there's no history yet (callers should simply omit any badge in that case).
 function getIndicator(blockId){
   const last = getLastSession(blockId);
-  if (!last) return { type:'new', label:'NOT STARTED' };
+  if (!last) return null;
   const target = getTargetForWeek(state.currentWeek);
   if (target === null){
     return { type:'new', label:'MAX EFFORT WEEK' };
@@ -546,6 +538,8 @@ function renderHome(){
         ? `<div class="block-row-rounds">${last.rounds}<span class="unit"> rds</span></div>`
         : `<div class="block-row-rounds" style="color:var(--cream-dim); font-size:15px;">—</div>`;
 
+      const badgeHtml = (last && ind) ? `<span class="indicator ${ind.type}">${ind.label}</span>` : '';
+
       row.innerHTML = `
         <div class="block-row-main">
           <div class="block-row-name">${escapeHtml(block.name)}</div>
@@ -553,7 +547,7 @@ function renderHome(){
         </div>
         <div class="block-row-right">
           ${roundsHtml}
-          <span class="indicator ${ind.type}">${ind.label}</span>
+          ${badgeHtml}
         </div>
       `;
       group.appendChild(row);
@@ -595,12 +589,20 @@ function renderLastTimeBanner(blockId){
   const el = document.getElementById('block-last-time-banner');
   const last = getLastSession(blockId);
   if (!last){
-    el.innerHTML = `<div class="last-time-banner">First time logging this block — go get a baseline!</div>`;
+    el.innerHTML = `<div class="last-time-banner"><div class="lt-label">First time on this block</div><div class="lt-row" style="color:var(--cream-dim); font-size:13.5px;">Log a baseline today</div></div>`;
     return;
   }
   const ind = getIndicator(blockId);
   const cls = ind.type === 'up' ? 'up' : (ind.type === 'hold' ? 'hold' : '');
-  el.innerHTML = `<div class="last-time-banner ${cls}">Last time (${formatDate(last.dateISO)}): <strong>${last.rounds} rounds</strong> — ${ind.label.toLowerCase()}</div>`;
+  el.innerHTML = `
+    <div class="last-time-banner ${cls}">
+      <div class="lt-label">Last time &middot; ${formatDate(last.dateISO)}</div>
+      <div class="lt-row">
+        <div class="lt-rounds">${last.rounds}<span class="unit"> rounds</span></div>
+        <span class="indicator ${ind.type}">${ind.label}</span>
+      </div>
+    </div>
+  `;
 }
 
 function renderBlockExerciseList(block){

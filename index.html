@@ -257,7 +257,7 @@
     <div class="week-banner">
       <div class="week-info">
         <div class="week-num" id="week-num-display">Week 1</div>
-        <div class="week-target" id="week-target-display">Target: 9 rounds</div>
+        <div class="week-target" id="week-target-display"></div>
       </div>
       <button class="week-advance-btn" onclick="advanceWeek()" id="week-advance-btn">Complete Week →</button>
     </div>
@@ -338,9 +338,9 @@ const program = {
       id: 'day2', name: 'Day 2',
       blocks: [
         { id: 'd2b1', name: 'Curls / Kickbacks / Flys', exercises: [
-          { name: 'Curls', reps: 6, weight: 5 },
-          { name: 'Kickbacks', reps: 6, weight: 5 },
-          { name: 'Flys', reps: 6, weight: 5 }
+          { name: 'Curls', reps: 8, weight: 5 },
+          { name: 'Kickbacks', reps: 8, weight: 5 },
+          { name: 'Flys', reps: 8, weight: 5 }
         ]}
       ]
     },
@@ -362,7 +362,12 @@ const program = {
 };
 
 // Week -> round target. Week 4 = max effort, no fixed target (null).
-const WEEK_TARGETS = { 1: 9, 2: 8, 3: 7, 4: null };
+// Standard curve applies to most blocks. Day 2 (Curls/Kickbacks/Flys) runs a curve
+// shifted down by 1 throughout, since it uses 8 reps per exercise instead of the usual 6.
+const STANDARD_WEEK_TARGETS = { 1: 9, 2: 8, 3: 7, 4: null };
+const BLOCK_WEEK_TARGETS = {
+  d2b1: { 1: 8, 2: 7, 3: 6, 4: null }
+};
 const MAX_WEEK = 4;
 
 function loadWeights(){
@@ -519,8 +524,9 @@ function findBlockAndDay(blockId){
 }
 
 /* ---------------- Week / threshold logic ---------------- */
-function getTargetForWeek(week){
-  return WEEK_TARGETS[week] !== undefined ? WEEK_TARGETS[week] : 7; // fallback safety
+function getTargetForWeek(week, blockId){
+  const curve = (blockId && BLOCK_WEEK_TARGETS[blockId]) ? BLOCK_WEEK_TARGETS[blockId] : STANDARD_WEEK_TARGETS;
+  return curve[week] !== undefined ? curve[week] : 7; // fallback safety
 }
 
 function getLastSession(blockId){
@@ -533,7 +539,7 @@ function getLastSession(blockId){
 function getIndicator(blockId){
   const last = getLastSession(blockId);
   if (!last) return null;
-  const target = getTargetForWeek(state.currentWeek);
+  const target = getTargetForWeek(state.currentWeek, blockId);
   if (target === null){
     return { type:'new', label:'MAX EFFORT WEEK' };
   }
@@ -570,9 +576,8 @@ function showToast(msg){
 
 /* ---------------- HOME ---------------- */
 function renderHome(){
-  const target = getTargetForWeek(state.currentWeek);
   document.getElementById('week-num-display').textContent = 'Week ' + state.currentWeek;
-  document.getElementById('week-target-display').textContent = target === null ? 'Max effort — no fixed target' : `Target: ${target} rounds`;
+  document.getElementById('week-target-display').textContent = state.currentWeek >= MAX_WEEK ? 'Max effort — no fixed target' : '';
   document.getElementById('week-advance-btn').textContent = state.currentWeek >= MAX_WEEK ? 'Restart Cycle →' : 'Complete Week →';
 
   const el = document.getElementById('home-content');
@@ -635,7 +640,7 @@ function openBlock(blockId){
   renderBlockExerciseList(found.block);
   renderLastTimeBanner(blockId);
 
-  const target = getTargetForWeek(state.currentWeek);
+  const target = getTargetForWeek(state.currentWeek, blockId);
   document.getElementById('round-target-label').textContent = target === null
     ? 'FULL ROUNDS · MAX EFFORT'
     : `FULL ROUNDS · TARGET ${target}`;
@@ -739,7 +744,7 @@ function renderHistory(){
 
     const entries = blockSessions.map(s=>{
       let pill = '';
-      const target = WEEK_TARGETS[s.week];
+      const target = getTargetForWeek(s.week, block.id);
       if (target !== null && target !== undefined){
         pill = s.rounds >= target
           ? '<span class="pill up">↑ UP</span>'

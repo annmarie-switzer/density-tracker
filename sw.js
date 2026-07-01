@@ -1,4 +1,4 @@
-const CACHE_NAME = 'density-v5';
+const CACHE_NAME = 'density-v6';
 const ASSETS = [
   './index.html',
   './manifest.json',
